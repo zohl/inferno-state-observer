@@ -1,0 +1,10 @@
+[ignore]
+<PROJECT_ROOT>/scripts/.*
+<PROJECT_ROOT>/lib/.*
+<PROJECT_ROOT>/package.json
+
+[include]
+
+[libs]
+
+[options]

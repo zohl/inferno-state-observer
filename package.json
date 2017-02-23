@@ -1,0 +1,40 @@
+{
+  "name": "inferno-state-observer",
+  "version": "0.0.1",
+  "description": "A small widget to observe global state of the application",
+  "main": "lib/index.js",
+  "scripts": {
+    "clean-only": "./scripts/clean.sh",
+    "build-only": "./scripts/build.sh",
+    "test-only": "./scripts/test.sh",
+    "prepublish-only": "./scripts/prepublish.sh",
+    "clean": "run-s clean-only",
+    "build": "run-s clean build-only",
+    "test": "run-s build test-only",
+    "prepublish": "run-s build test-only prepublish-only"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.21.0",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-inferno": "1.2.0-beta12",
+    "babel-plugin-syntax-jsx": "^6.3.13",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-es2015": "^6.18.0",
+    "c-preprocessor": "^0.2.12",
+    "eslint": "^3.15.0",
+    "eslint-plugin-flowtype": "^2.30.0",
+    "estraverse-fb": "^1.3.1",
+    "flow-copy-source": "^1.1.0",
+    "inferno-server": "^1.2.2",
+    "less": "^2.7.2",
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "inferno": "1.0.0-beta36",
+    "inferno-component": "1.0.0-beta36",
+    "inferno-create-element": "1.0.0-beta36"
+  },
+  "author": "Al Zohali",
+  "license": "MIT"
+}

@@ -1,0 +1,34 @@
+--- 
+env:
+  es6: true
+  browser: true
+  
+plugins:
+ - 'flowtype'
+
+extends:
+ - 'eslint:recommended'
+ - 'plugin:flowtype/recommended'
+
+parser: 'babel-eslint'
+parserOptions:
+  sourceType: 'module'
+  ecmaFeatures:
+    jsx: true
+
+globals:
+  process: false
+
+rules: 
+  comma-style: [2, 'first']
+  indent: [2, 2, {ArrayExpression: 2, ObjectExpression: 1, SwitchCase: 0}]
+  linebreak-style: [2, 'unix']
+  no-console: [0]
+  no-trailing-spaces: [2]
+  no-unused-vars: [2, {argsIgnorePattern: '^_', varsIgnorePattern: 'Inferno|Component'}]
+  quotes: [2, 'single', {'allowTemplateLiterals': true}]
+  semi: [2, 'always']
+  
+  flowtype/space-after-type-colon: [0]
+  flowtype/boolean-style: [2, 'bool']
+  flowtype/union-intersection-spacing: [0]

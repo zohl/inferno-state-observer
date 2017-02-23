@@ -1,0 +1,29 @@
+.observer {
+  .field {
+    label {
+      input {
+        display: none;
+
+        &:checked + .widget::before {
+          content: '\u25bc';
+        }
+      }
+
+      .widget {
+        &::before {
+          content: '\u25ba';
+          float: left;
+          margin-right: 1ch;
+        }
+      }
+    }
+
+    .contents {
+      padding-left: 2ch;
+
+      &.hidden {
+        display: none;
+      }
+    }
+  }
+}

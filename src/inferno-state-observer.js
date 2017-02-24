@@ -11,10 +11,23 @@ type ObserverState = {
     enabled: bool
   , watch:   Array<string>
   }
-}
+};
 
+type ObserverOptions = {
+  position?: ('left' | 'right')
+, width?:    number
+};
 
-const initObserver = <State: Object>(state: State, _: Dispatch<State>) => {
+const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
+
+const initObserver = <State: Object>(
+  state:     State
+, _dispatch: Dispatch<State>
+, options?:  ObserverOptions
+): void => {
+
+  options = (null != options) ? options : {};
+
   state.observer = {
     enabled: true
   , watch: []
@@ -22,12 +35,33 @@ const initObserver = <State: Object>(state: State, _: Dispatch<State>) => {
 
   if ('undefined' !== typeof document) {
     var style = document.createElement('style');
+    style.id = 'observer-stylesheet';
+
     style.type = 'text/css';
     style.innerHTML = `
       #include "inferno-state-observer.css"
     `;
 
     document.getElementsByTagName('head')[0].appendChild(style);
+
+    let sheet = style.sheet;
+    if (sheet instanceof CSSStyleSheet) {
+
+      let position = coalesce(options.position, 'right');
+      let width = coalesce(options.width, 40);
+      sheet.insertRule(`
+        .observer {
+          ${position}: 0px;
+          width: ${width}ch;
+        }`
+      , sheet.cssRules.length);
+    }
+    else {
+      // cannot modify the sheet
+    }
+  }
+  else {
+    // running not in a browser
   }
 };
 

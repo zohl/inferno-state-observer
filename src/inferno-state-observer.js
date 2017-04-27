@@ -8,14 +8,16 @@ type Dispatch<State> = (a: Action<State>) => void;
 
 type ObserverState = {
   observer: {
-    enabled: bool
-  , watch:   Array<string>
+    enabled:  bool
+  , watch:    Array<string>
+  , rootName: string
   }
 };
 
 type ObserverOptions = {
   position?: ('left' | 'right')
 , width?:    number
+, rootName?: string
 };
 
 const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
@@ -28,9 +30,12 @@ const initObserver = <State: Object>(
 
   options = (null != options) ? options : {};
 
+  let rootName = coalesce(options.rootName, 'state');
+
   state.observer = {
     enabled: true
   , watch: []
+  , rootName: rootName
   };
 
   if ('undefined' !== typeof document) {
@@ -128,7 +133,7 @@ const renderObserver = <State: Object & ObserverState>(
 ): React$Element<any> =>
   (state.observer && state.observer.enabled)
     ? (<div class = "observer">
-         {renderCompositeValue(state, dispatch, '', 'root', state)}
+         {renderCompositeValue(state, dispatch, '', state.observer.rootName, state)}
        </div>)
     : (<div class = "observer"/>);
 

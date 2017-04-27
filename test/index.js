@@ -19,5 +19,19 @@ describe('renderObserver', () => {
     initObserver(state);
     console.log(renderToString(renderObserver(state)));
   });
+
+
+  it('changes root name according to the option', () => {
+
+    var state = {};
+
+    initObserver(state);
+    var s1 = renderToString(renderObserver(state));
+
+    initObserver(state, null, {rootName: 'root'});
+    var s2 = renderToString(renderObserver(state));
+
+    assert.equal(s1, s2.replace(/root/g, 'state'));
+  });
 });
 

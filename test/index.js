@@ -16,8 +16,9 @@ describe('renderObserver', () => {
       , waldo: null
       }
     };
+
     initObserver(state);
-    console.log(renderToString(renderObserver(state)));
+    renderToString(renderObserver(state));
   });
 
 
@@ -32,6 +33,36 @@ describe('renderObserver', () => {
     var s2 = renderToString(renderObserver(state));
 
     assert.equal(s1, s2.replace(/root/g, 'state'));
+  });
+
+
+  it('expands items specified in `options.watch`', () => {
+
+    var state = {
+      foo: {
+        bar: 123
+      , baz: "321"
+      }
+    , qux: {
+        quux: 456
+      , corge: "654"
+      }
+    };
+
+    initObserver(state, null, {rootName: 's'});
+    assert.deepEqual(
+      ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
+    , [true, false, false]);
+
+    initObserver(state, null, {rootName: 's', watch: ['foo']});
+    assert.deepEqual(
+      ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
+    , [true, true, false]);
+
+    initObserver(state, null, {rootName: 's', watch: ['qux']});
+    assert.deepEqual(
+      ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
+    , [true, false, true]);
   });
 });
 

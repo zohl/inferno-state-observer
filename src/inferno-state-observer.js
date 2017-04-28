@@ -18,6 +18,7 @@ type ObserverOptions = {
   position?: ('left' | 'right')
 , width?:    number
 , rootName?: string
+, watch?:    Array<string>
 };
 
 const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
@@ -32,11 +33,24 @@ const initObserver = <State: Object>(
 
   let rootName = coalesce(options.rootName, 'state');
 
+  let watch = {};
+  watch['.' + rootName] = true;
+
+  let watchPaths = coalesce(options.watch, []);
+  watchPaths.forEach(s => {
+    var path = '.' + rootName;
+    s.split('.').forEach(p => {
+      path += '.' + p;
+      watch[path] = true;
+    });
+  });
+
   state.observer = {
     enabled: true
-  , watch: []
+  , watch: watch
   , rootName: rootName
   };
+
 
   if ('undefined' !== typeof document) {
     var style = document.createElement('style');

@@ -11,6 +11,7 @@ type ObserverState = {
     enabled:  bool
   , watch:    Array<string>
   , rootName: string
+  , ignore:   RegExp
   }
 };
 
@@ -19,6 +20,7 @@ type ObserverOptions = {
 , width?:    number
 , rootName?: string
 , watch?:    Array<string>
+, ignore?:   string
 };
 
 const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
@@ -45,10 +47,13 @@ const initObserver = <State: Object>(
     });
   });
 
+  let ignore = new RegExp(coalesce(options.ignore, '^$'));
+
   state.observer = {
     enabled: true
   , watch: watch
   , rootName: rootName
+  , ignore: ignore
   };
 
 
@@ -121,7 +126,7 @@ const renderCompositeValue = <State: Object & ObserverState>(
     <div class = "field">
       <label>
         <input type = "checkbox"
-          name = {path + '.' + key}
+          name = {newPath}
           checked = {isExpanded}
           onInput = {e => dispatch(toggleWatch(e.target.name))}
         />
@@ -132,8 +137,9 @@ const renderCompositeValue = <State: Object & ObserverState>(
       <div class = {'contents' + ((isExpanded) ? '' : ' hidden')}>
         {Object.keys(value)
           .filter((path.length) ? _ => true : x => 'observer' !== x)
+          .filter(s => !state.observer.ignore.test(newPath + '.' + s))
           .map(x => (null !== value[x] && 'object' == typeof value[x])
-            ? renderCompositeValue(state, dispatch, path + '.' + key, x, value[x])
+            ? renderCompositeValue(state, dispatch, newPath, x, value[x])
             : renderSimpleValue(state, dispatch, x, value[x]))}
       </div>
     </div>);

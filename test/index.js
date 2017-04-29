@@ -1,6 +1,8 @@
 import assert from 'assert';
 import {renderToString} from 'inferno-server';
 import {renderObserver, initObserver} from '../build/index';
+import Inferno from 'inferno';
+
 
 describe('renderObserver', () => {
 
@@ -63,6 +65,31 @@ describe('renderObserver', () => {
     assert.deepEqual(
       ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
     , [true, false, true]);
+  });
+
+
+  it('does not display items in ignore filter', () => {
+
+    var state = {
+      foo: 123
+    , bar: "321"
+    , baz: 456
+    };
+
+    var needles = ['foo', 'bar', 'baz'].map(n =>
+      renderToString((<span class="key">{n}: </span>)));
+
+    initObserver(state);
+    var s = renderToString(renderObserver(state));
+    assert.deepEqual(needles.map(n => (-1) != s.search(n)), [true, true, true]);
+
+    initObserver(state, null, {ignore: '.*foo'});
+    var s = renderToString(renderObserver(state));
+    assert.deepEqual(needles.map(n => (-1) != s.search(n)), [false, true, true]);
+
+    initObserver(state, null, {ignore: '.*ba?'});
+    var s = renderToString(renderObserver(state));
+    assert.deepEqual(needles.map(n => (-1) != s.search(n)), [true, false, false]);
   });
 });
 

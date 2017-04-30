@@ -8,19 +8,21 @@ type Dispatch<State> = (a: Action<State>) => void;
 
 type ObserverState = {
   observer: {
-    enabled:  bool
-  , watch:    Array<string>
-  , rootName: string
-  , ignore:   RegExp
+    enabled:   bool
+  , watch:     Array<string>
+  , rootName:  string
+  , delimiter: string
+  , ignore:    RegExp
   }
 };
 
 type ObserverOptions = {
-  position?: ('left' | 'right')
-, width?:    number
-, rootName?: string
-, watch?:    Array<string>
-, ignore?:   string
+  position?:  ('left' | 'right')
+, width?:     number
+, rootName?:  string
+, delimiter?: string
+, watch?:     Array<string>
+, ignore?:    string
 };
 
 const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
@@ -34,15 +36,16 @@ const initObserver = <State: Object>(
   options = (null != options) ? options : {};
 
   let rootName = coalesce(options.rootName, 'state');
+  let delimiter = coalesce(options.delimiter, '/');
 
   let watch = {};
-  watch['.' + rootName] = true;
+  watch[delimiter + rootName] = true;
 
   let watchPaths = coalesce(options.watch, []);
   watchPaths.forEach(s => {
-    var path = '.' + rootName;
-    s.split('.').forEach(p => {
-      path += '.' + p;
+    var path = delimiter + rootName;
+    s.split(delimiter).forEach(p => {
+      path += delimiter + p;
       watch[path] = true;
     });
   });
@@ -53,6 +56,7 @@ const initObserver = <State: Object>(
     enabled: true
   , watch: watch
   , rootName: rootName
+  , delimiter: delimiter
   , ignore: ignore
   };
 
@@ -119,7 +123,7 @@ const renderCompositeValue = <State: Object & ObserverState>(
 , key:      string
 , value:    Object
 ): React$Element<any> => {
-  let newPath = path + '.' + key;
+  let newPath = path + state.observer.delimiter + key;
   let isExpanded = state.observer.watch[newPath];
 
   return (
@@ -137,7 +141,7 @@ const renderCompositeValue = <State: Object & ObserverState>(
       <div class = {'contents' + ((isExpanded) ? '' : ' hidden')}>
         {Object.keys(value)
           .filter((path.length) ? _ => true : x => 'observer' !== x)
-          .filter(s => !state.observer.ignore.test(newPath + '.' + s))
+          .filter(s => !state.observer.ignore.test(newPath + state.observer.delimiter + s))
           .map(x => (null !== value[x] && 'object' == typeof value[x])
             ? renderCompositeValue(state, dispatch, newPath, x, value[x])
             : renderSimpleValue(state, dispatch, x, value[x]))}

@@ -53,17 +53,17 @@ describe('renderObserver', () => {
 
     initObserver(state, null, {rootName: 's'});
     assert.deepEqual(
-      ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
+      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watch[s])
     , [true, false, false]);
 
     initObserver(state, null, {rootName: 's', watch: ['foo']});
     assert.deepEqual(
-      ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
+      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watch[s])
     , [true, true, false]);
 
     initObserver(state, null, {rootName: 's', watch: ['qux']});
     assert.deepEqual(
-      ['.s', '.s.foo', '.s.qux'].map(s => !!state.observer.watch[s])
+      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watch[s])
     , [true, false, true]);
   });
 
@@ -90,6 +90,18 @@ describe('renderObserver', () => {
     initObserver(state, null, {ignore: '.*ba?'});
     var s = renderToString(renderObserver(state));
     assert.deepEqual(needles.map(n => (-1) != s.search(n)), [true, false, false]);
+  });
+
+
+  it('separates items in `watch` dictionary by specified delimiter', () => {
+
+    var state = { foo: { bar: { baz: 123 } } };
+
+    initObserver(state, null, {rootName: 's', watch: ['foo/bar/baz']});
+    assert.equal(state.observer.watch['/s/foo/bar/baz'], true);
+
+    initObserver(state, null, {rootName: 's', watch: ['foo.bar.baz'], delimiter: '.'});
+    assert.equal(state.observer.watch['.s.foo.bar.baz'], true);
   });
 });
 

@@ -38,7 +38,7 @@ describe('renderObserver', () => {
   });
 
 
-  it('expands items specified in `options.watch`', () => {
+  it('expands items specified in `options.watchPaths`', () => {
 
     var state = {
       foo: {
@@ -53,17 +53,17 @@ describe('renderObserver', () => {
 
     initObserver(state, null, {rootName: 's'});
     assert.deepEqual(
-      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watch[s])
+      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watchPaths[s])
     , [true, false, false]);
 
-    initObserver(state, null, {rootName: 's', watch: ['foo']});
+    initObserver(state, null, {rootName: 's', watchPaths: ['foo']});
     assert.deepEqual(
-      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watch[s])
+      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watchPaths[s])
     , [true, true, false]);
 
-    initObserver(state, null, {rootName: 's', watch: ['qux']});
+    initObserver(state, null, {rootName: 's', watchPaths: ['qux']});
     assert.deepEqual(
-      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watch[s])
+      ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watchPaths[s])
     , [true, false, true]);
   });
 
@@ -93,15 +93,15 @@ describe('renderObserver', () => {
   });
 
 
-  it('separates items in `watch` dictionary by specified delimiter', () => {
+  it('separates items in `watchPaths` dictionary by specified delimiter', () => {
 
     var state = { foo: { bar: { baz: 123 } } };
 
-    initObserver(state, null, {rootName: 's', watch: ['foo/bar/baz']});
-    assert.equal(state.observer.watch['/s/foo/bar/baz'], true);
+    initObserver(state, null, {rootName: 's', watchPaths: ['foo/bar/baz']});
+    assert.equal(state.observer.watchPaths['/s/foo/bar/baz'], true);
 
-    initObserver(state, null, {rootName: 's', watch: ['foo.bar.baz'], delimiter: '.'});
-    assert.equal(state.observer.watch['.s.foo.bar.baz'], true);
+    initObserver(state, null, {rootName: 's', watchPaths: ['foo.bar.baz'], delimiter: '.'});
+    assert.equal(state.observer.watchPaths['.s.foo.bar.baz'], true);
   });
 });
 

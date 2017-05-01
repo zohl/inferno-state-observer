@@ -8,21 +8,21 @@ type Dispatch<State> = (a: Action<State>) => void;
 
 type ObserverState = {
   observer: {
-    enabled:   bool
-  , watch:     Array<string>
-  , rootName:  string
-  , delimiter: string
-  , ignore:    RegExp
+    enabled:    bool
+  , watchPaths: Array<string>
+  , rootName:   string
+  , delimiter:  string
+  , ignore:     RegExp
   }
 };
 
 type ObserverOptions = {
-  position?:  ('left' | 'right')
-, width?:     number
-, rootName?:  string
-, delimiter?: string
-, watch?:     Array<string>
-, ignore?:    string
+  position?:   ('left' | 'right')
+, width?:      number
+, rootName?:   string
+, delimiter?:  string
+, watchPaths?: Array<string>
+, ignore?:     string
 };
 
 const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
@@ -38,15 +38,15 @@ const initObserver = <State: Object>(
   let rootName = coalesce(options.rootName, 'state');
   let delimiter = coalesce(options.delimiter, '/');
 
-  let watch = {};
-  watch[delimiter + rootName] = true;
+  let watchPaths = {};
+  watchPaths[delimiter + rootName] = true;
 
-  let watchPaths = coalesce(options.watch, []);
-  watchPaths.forEach(s => {
+  let paths = coalesce(options.watchPaths, []);
+  paths.forEach(s => {
     var path = delimiter + rootName;
     s.split(delimiter).forEach(p => {
       path += delimiter + p;
-      watch[path] = true;
+      watchPaths[path] = true;
     });
   });
 
@@ -54,7 +54,7 @@ const initObserver = <State: Object>(
 
   state.observer = {
     enabled: true
-  , watch: watch
+  , watchPaths: watchPaths
   , rootName: rootName
   , delimiter: delimiter
   , ignore: ignore
@@ -96,8 +96,8 @@ const initObserver = <State: Object>(
 
 const toggleWatch = <State: Object & ObserverState>(name: string):Action<State> =>
   (state, _dispatch) => {
-    let result = name in state.observer.watch && state.observer.watch[name];
-    state.observer.watch[name] = !result;
+    let result = name in state.observer.watchPaths && state.observer.watchPaths[name];
+    state.observer.watchPaths[name] = !result;
   };
 
 
@@ -124,7 +124,7 @@ const renderCompositeValue = <State: Object & ObserverState>(
 , value:    Object
 ): React$Element<any> => {
   let newPath = path + state.observer.delimiter + key;
-  let isExpanded = state.observer.watch[newPath];
+  let isExpanded = state.observer.watchPaths[newPath];
 
   return (
     <div class = "field">

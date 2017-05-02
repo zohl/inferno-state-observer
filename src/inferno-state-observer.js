@@ -27,7 +27,7 @@ type ObserverOptions = {
 
 const coalesce = <T>(x: ?T, y:T):T => (null == x) ? y : x;
 
-const initObserver = <State: Object>(
+const init = <State: Object>(
   state:     State
 , _dispatch: Dispatch<State>
 , options?:  ObserverOptions
@@ -151,7 +151,7 @@ const renderCompositeValue = <State: Object & ObserverState>(
 
 
 
-const renderObserver = <State: Object & ObserverState>(
+const view = <State: Object & ObserverState>(
   state: State
 , dispatch: Dispatch<State>
 ): React$Element<any> =>
@@ -161,4 +161,4 @@ const renderObserver = <State: Object & ObserverState>(
        </div>)
     : (<div class = "observer"/>);
 
-export {initObserver, renderObserver};
+export {init, view};

@@ -1,10 +1,10 @@
 import assert from 'assert';
 import {renderToString} from 'inferno-server';
-import {renderObserver, initObserver} from '../build/index';
+import stateObserver from '../build/index';
 import Inferno from 'inferno';
 
 
-describe('renderObserver', () => {
+describe('stateObserver.view', () => {
 
   it('outputs result without errors', () => {
 
@@ -19,8 +19,8 @@ describe('renderObserver', () => {
       }
     };
 
-    initObserver(state);
-    renderToString(renderObserver(state));
+    stateObserver.init(state);
+    renderToString(stateObserver.view(state));
   });
 
 
@@ -28,11 +28,11 @@ describe('renderObserver', () => {
 
     var state = {};
 
-    initObserver(state);
-    var s1 = renderToString(renderObserver(state));
+    stateObserver.init(state);
+    var s1 = renderToString(stateObserver.view(state));
 
-    initObserver(state, null, {rootName: 'root'});
-    var s2 = renderToString(renderObserver(state));
+    stateObserver.init(state, null, {rootName: 'root'});
+    var s2 = renderToString(stateObserver.view(state));
 
     assert.equal(s1, s2.replace(/root/g, 'state'));
   });
@@ -51,17 +51,17 @@ describe('renderObserver', () => {
       }
     };
 
-    initObserver(state, null, {rootName: 's'});
+    stateObserver.init(state, null, {rootName: 's'});
     assert.deepEqual(
       ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watchPaths[s])
     , [true, false, false]);
 
-    initObserver(state, null, {rootName: 's', watchPaths: ['foo']});
+    stateObserver.init(state, null, {rootName: 's', watchPaths: ['foo']});
     assert.deepEqual(
       ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watchPaths[s])
     , [true, true, false]);
 
-    initObserver(state, null, {rootName: 's', watchPaths: ['qux']});
+    stateObserver.init(state, null, {rootName: 's', watchPaths: ['qux']});
     assert.deepEqual(
       ['/s', '/s/foo', '/s/qux'].map(s => !!state.observer.watchPaths[s])
     , [true, false, true]);
@@ -79,16 +79,16 @@ describe('renderObserver', () => {
     var needles = ['foo', 'bar', 'baz'].map(n =>
       renderToString((<span class="key">{n}: </span>)));
 
-    initObserver(state);
-    var s = renderToString(renderObserver(state));
+    stateObserver.init(state);
+    var s = renderToString(stateObserver.view(state));
     assert.deepEqual(needles.map(n => (-1) != s.search(n)), [true, true, true]);
 
-    initObserver(state, null, {ignore: '.*foo'});
-    var s = renderToString(renderObserver(state));
+    stateObserver.init(state, null, {ignore: '.*foo'});
+    var s = renderToString(stateObserver.view(state));
     assert.deepEqual(needles.map(n => (-1) != s.search(n)), [false, true, true]);
 
-    initObserver(state, null, {ignore: '.*ba?'});
-    var s = renderToString(renderObserver(state));
+    stateObserver.init(state, null, {ignore: '.*ba?'});
+    var s = renderToString(stateObserver.view(state));
     assert.deepEqual(needles.map(n => (-1) != s.search(n)), [true, false, false]);
   });
 
@@ -97,10 +97,10 @@ describe('renderObserver', () => {
 
     var state = { foo: { bar: { baz: 123 } } };
 
-    initObserver(state, null, {rootName: 's', watchPaths: ['foo/bar/baz']});
+    stateObserver.init(state, null, {rootName: 's', watchPaths: ['foo/bar/baz']});
     assert.equal(state.observer.watchPaths['/s/foo/bar/baz'], true);
 
-    initObserver(state, null, {rootName: 's', watchPaths: ['foo.bar.baz'], delimiter: '.'});
+    stateObserver.init(state, null, {rootName: 's', watchPaths: ['foo.bar.baz'], delimiter: '.'});
     assert.equal(state.observer.watchPaths['.s.foo.bar.baz'], true);
   });
 });

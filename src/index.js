@@ -1,3 +1,3 @@
-import {initObserver, renderObserver} from './inferno-state-observer';
+import {init, view} from './inferno-state-observer';
 
-export {initObserver, renderObserver};
+export default {init, view};
